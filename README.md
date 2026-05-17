@@ -1,4 +1,4 @@
-# @vivinkv28/strapi-upload-things
+# @vivinkv28/strapi-provider-uploadthing
 
 UploadThing provider for the Strapi Upload plugin.
 
@@ -27,7 +27,7 @@ Learn more at [uploadthing.com](https://uploadthing.com/).
 Install the provider in your Strapi project:
 
 ```bash
-npm install @vivinkv28/strapi-upload-things
+npm install @vivinkv28/strapi-provider-uploadthing
 ```
 
 ## Requirements
@@ -65,7 +65,7 @@ Create or update `./config/plugins.ts`:
 export default ({ env }) => ({
   upload: {
     config: {
-      provider: '@vivinkv28/strapi-upload-things',
+      provider: '@vivinkv28/strapi-provider-uploadthing',
       providerOptions: {
         token: env('UPLOADTHING_TOKEN'),
         acl: env('UPLOADTHING_ACL', 'public-read'),
