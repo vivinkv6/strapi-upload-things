@@ -105,24 +105,6 @@ export default ({ env }) => ({
 | `logFormat` | `string` | `undefined` | Optional UploadThing log format. |
 | `isDev` | `boolean` | `undefined` | Optional UploadThing development mode flag. |
 
-## How It Works
-
-When Strapi uploads a file:
-
-1. The provider sends the file to UploadThing using `UTApi`.
-2. The returned `ufsUrl` is stored as `url` and `previewUrl`.
-3. UploadThing metadata is stored in `file.provider_metadata.uploadthing`.
-4. On delete, the provider removes the remote UploadThing file using the stored `customId` or `fileKey`.
-
-Stored metadata includes:
-
-- `fileKey`
-- `customId`
-- `url`
-- `ufsUrl`
-- `name`
-- `size`
-
 ## Private Files
 
 If `privateFiles` is enabled, the provider reports files as private and asks UploadThing for a signed URL when Strapi serves them.
@@ -133,24 +115,6 @@ Example:
 UPLOADTHING_PRIVATE_FILES=true
 UPLOADTHING_SIGNED_URL_EXPIRES_IN=3600
 ```
-
-## Replace Media Behavior
-
-This provider is designed to work better with Strapi's Replace Media flow:
-
-- it keeps deterministic custom IDs by default
-- if UploadThing rejects a replacement because the old custom ID is still in use, it retries with a fresh unique custom ID
-- if UploadThing reports a transient network or ingest failure, it retries automatically
-- if the old remote file is already missing during delete, the provider ignores that condition and continues
-
-These safeguards help reduce `500` errors during replace operations, especially when responsive image formats are being uploaded.
-
-## Notes
-
-- Public files use UploadThing's returned `ufsUrl` so Media Library previews work correctly.
-- If `useCustomId` is enabled, the provider uses the Strapi file hash and extension as the preferred UploadThing custom ID.
-- For image-heavy projects, keeping `uploadConcurrency` at `1` is the safest default.
-- If you use a strict Content Security Policy, allow your UploadThing asset host for image and media previews.
 
 ## License
 
