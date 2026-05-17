@@ -4,6 +4,12 @@ UploadThing provider for the Strapi Upload plugin.
 
 This package lets Strapi store Media Library assets in UploadThing while keeping file metadata inside Strapi. It supports regular uploads, stream uploads, private files, signed URLs, remote cleanup on delete, and safer media replacement flows.
 
+## What is UploadThing?
+
+UploadThing is a file upload and storage platform for modern applications. It helps developers handle file uploads, storage delivery, and secure file access with a developer-friendly API.
+
+Learn more at [uploadthing.com](https://uploadthing.com/).
+
 ## Features
 
 - Upload Strapi media files to UploadThing
