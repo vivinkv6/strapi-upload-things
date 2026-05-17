@@ -1,7 +1,7 @@
 "use strict";
 Object.defineProperties(exports, { __esModule: { value: true }, [Symbol.toStringTag]: { value: "Module" } });
-const module$1 = require("module");
 const crypto = require("crypto");
+const server = require("uploadthing/server");
 const _interopDefault = (e) => e && e.__esModule ? e : { default: e };
 const crypto__default = /* @__PURE__ */ _interopDefault(crypto);
 const bootstrap = ({ strapi }) => {
@@ -23,8 +23,6 @@ const policies = {};
 const register = () => {
 };
 const routes = [];
-const appRequire = module$1.createRequire(`${process.cwd()}/package.json`);
-const { UTApi, UTFile } = appRequire("uploadthing/server");
 const DEFAULT_CONTENT_DISPOSITION = "inline";
 const DEFAULT_SIGNED_URL_TTL = 60 * 60;
 const DEFAULT_UPLOAD_CONCURRENCY = 1;
@@ -111,7 +109,7 @@ const provider = (providerOptions = {}) => {
       "Missing UploadThing token. Set `providerOptions.token` or the `UPLOADTHING_TOKEN` environment variable."
     );
   }
-  const utapi = new UTApi({
+  const utapi = new server.UTApi({
     token,
     apiUrl,
     ingestUrl,
@@ -162,7 +160,7 @@ const provider = (providerOptions = {}) => {
     };
   };
   const performUpload = async (file, buffer, customId) => {
-    const uploadFile = new UTFile([buffer], file.name || `${file.hash}${file.ext || ""}`, {
+    const uploadFile = new server.UTFile([buffer], file.name || `${file.hash}${file.ext || ""}`, {
       customId,
       type: file.mime
     });
@@ -278,4 +276,3 @@ const index = {
   services
 };
 exports.default = index;
-//# sourceMappingURL=index.js.map

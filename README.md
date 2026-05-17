@@ -21,7 +21,7 @@ This package lets Strapi store Media Library assets in UploadThing while keeping
 Install the provider in your Strapi project:
 
 ```bash
-npm install @vivinkv28/strapi-upload-things uploadthing
+npm install @vivinkv28/strapi-upload-things
 ```
 
 ## Requirements

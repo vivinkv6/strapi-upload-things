@@ -1,5 +1,5 @@
-import { createRequire } from "module";
 import crypto from "crypto";
+import { UTApi, UTFile } from "uploadthing/server";
 const bootstrap = ({ strapi }) => {
   strapi.log.info("[strapi-upload-things] plugin bootstrapped");
 };
@@ -19,8 +19,6 @@ const policies = {};
 const register = () => {
 };
 const routes = [];
-const appRequire = createRequire(`${process.cwd()}/package.json`);
-const { UTApi, UTFile } = appRequire("uploadthing/server");
 const DEFAULT_CONTENT_DISPOSITION = "inline";
 const DEFAULT_SIGNED_URL_TTL = 60 * 60;
 const DEFAULT_UPLOAD_CONCURRENCY = 1;
@@ -276,4 +274,3 @@ const index = {
 export {
   index as default
 };
-//# sourceMappingURL=index.mjs.map

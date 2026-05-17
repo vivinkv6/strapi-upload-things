@@ -1,8 +1,5 @@
-import { createRequire } from 'module';
 import crypto from 'crypto';
-
-const appRequire = createRequire(`${process.cwd()}/package.json`);
-const { UTApi, UTFile } = appRequire('uploadthing/server');
+import { UTApi, UTFile } from 'uploadthing/server';
 
 const DEFAULT_CONTENT_DISPOSITION = 'inline';
 const DEFAULT_SIGNED_URL_TTL = 60 * 60;
