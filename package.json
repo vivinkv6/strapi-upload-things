@@ -1,0 +1,57 @@
+{
+  "name": "@vivinkv28/strapi-upload-things",
+  "version": "0.1.0",
+  "description": "UploadThing provider for the Strapi Upload plugin",
+  "main": "index.js",
+  "exports": {
+    ".": "./index.js",
+    "./strapi-server": {
+      "source": "./server/src/index.js",
+      "import": "./dist/server/index.mjs",
+      "require": "./dist/server/index.js",
+      "default": "./dist/server/index.js"
+    },
+    "./package.json": "./package.json"
+  },
+  "files": [
+    "dist/",
+    "index.js",
+    "server",
+    "strapi-server.js",
+    "README.md"
+  ],
+  "keywords": [
+    "strapi",
+    "strapi-plugin",
+    "uploadthing",
+    "upload",
+    "provider",
+    "media-library"
+  ],
+  "strapi": {
+    "kind": "plugin",
+    "name": "strapi-upload-things",
+    "displayName": "UploadThings Provider",
+    "description": "UploadThing integration for the Strapi upload plugin"
+  },
+  "license": "MIT",
+  "publishConfig": {
+    "access": "public"
+  },
+  "engines": {
+    "node": ">=20.0.0"
+  },
+  "scripts": {
+    "build": "node ./node_modules/@strapi/sdk-plugin/bin/strapi-plugin.js build",
+    "watch": "node ./node_modules/@strapi/sdk-plugin/bin/strapi-plugin.js watch",
+    "watch:link": "node ./node_modules/@strapi/sdk-plugin/bin/strapi-plugin.js watch:link",
+    "verify": "node ./node_modules/@strapi/sdk-plugin/bin/strapi-plugin.js verify"
+  },
+  "dependencies": {
+    "uploadthing": "^7.7.2"
+  },
+  "devDependencies": {
+    "@babel/runtime": "^7.29.2",
+    "@strapi/sdk-plugin": "^6.1.0"
+  }
+}
