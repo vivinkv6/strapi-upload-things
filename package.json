@@ -1,6 +1,6 @@
 {
   "name": "@vivinkv28/strapi-provider-uploadthing",
-  "version": "0.1.6",
+  "version": "0.1.7",
   "description": "UploadThing provider for the Strapi Upload plugin",
   "repository": {
     "type": "git",
