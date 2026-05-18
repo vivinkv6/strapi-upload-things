@@ -2,6 +2,14 @@
   "name": "@vivinkv28/strapi-provider-uploadthing",
   "version": "0.1.5",
   "description": "UploadThing provider for the Strapi Upload plugin",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/vivinkv28/strapi-provider-uploadthing.git"
+  },
+  "homepage": "https://github.com/vivinkv28/strapi-provider-uploadthing#readme",
+  "bugs": {
+    "url": "https://github.com/vivinkv28/strapi-provider-uploadthing/issues"
+  },
   "main": "index.js",
   "exports": {
     ".": "./index.js",
@@ -18,6 +26,7 @@
     "index.js",
     "server",
     "strapi-server.js",
+    "LICENSE",
     "README.md"
   ],
   "keywords": [
@@ -45,7 +54,8 @@
     "build": "node ./node_modules/@strapi/sdk-plugin/bin/strapi-plugin.js build",
     "watch": "node ./node_modules/@strapi/sdk-plugin/bin/strapi-plugin.js watch",
     "watch:link": "node ./node_modules/@strapi/sdk-plugin/bin/strapi-plugin.js watch:link",
-    "verify": "node ./node_modules/@strapi/sdk-plugin/bin/strapi-plugin.js verify"
+    "verify": "node ./node_modules/@strapi/sdk-plugin/bin/strapi-plugin.js verify",
+    "prepack": "npm run build"
   },
   "dependencies": {
     "uploadthing": "^7.7.2"
