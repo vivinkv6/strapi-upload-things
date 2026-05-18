@@ -1,26 +1,25 @@
 # @vivinkv28/strapi-provider-uploadthing
 
-UploadThing provider for the Strapi Upload plugin.
+UploadThing provider for the Strapi Uploads
 
-This package lets Strapi store Media Library assets in UploadThing while keeping file metadata inside Strapi. It supports regular uploads, stream uploads, private files, signed URLs, remote cleanup on delete, and safer media replacement flows.
+This provider stores Strapi Media Library files in UploadThing while keeping file records and metadata inside Strapi.
 
-## What is UploadThing?
+## What This Provider Does
 
-UploadThing is a file upload and storage platform for modern applications. It helps developers handle file uploads, storage delivery, and secure file access with a developer-friendly API.
+- Uploads Strapi media files to UploadThing
+- Stores UploadThing metadata in `provider_metadata.uploadthing`
+- Uses the UploadThing file URL as the Strapi file URL
+- Supports both `upload` and `uploadStream`
+- Supports signed URLs for private files
+- Deletes the remote file when the Strapi file is deleted
+- Uses predictable `customId` values by default
+- Retries transient upload failures automatically
+- Handles replace-media conflicts more safely
 
-Learn more at [uploadthing.com](https://uploadthing.com/).
+## Requirements
 
-## Features
-
-- Upload Strapi media files to UploadThing
-- Store UploadThing file metadata in `provider_metadata`
-- Use UploadThing `ufsUrl` as the Strapi asset URL
-- Support `upload` and `uploadStream`
-- Support private files with signed URL generation
-- Delete remote files when media is removed from Strapi
-- Keep predictable custom IDs by default
-- Retry transient UploadThing ingest failures automatically
-- Improve replace-media reliability with conflict fallback handling
+- Node.js `>= 20.0.0`
+- Strapi v5
 
 ## Installation
 
@@ -30,20 +29,22 @@ Install the provider in your Strapi project:
 npm install @vivinkv28/strapi-provider-uploadthing
 ```
 
-## Requirements
+## Quick Start
 
-- Node.js `>= 20.0.0`
-- Strapi v5
+1. Add your UploadThing token to `.env`.
+2. Configure the upload provider in `config/plugins.ts`.
+3. Update `config/middlewares.ts` so Strapi allows UploadThing media URLs in the admin.
+4. Restart Strapi.
 
 ## Environment Variables
 
-Add your UploadThing token to your Strapi `.env` file:
+Minimum required:
 
 ```env
 UPLOADTHING_TOKEN=your_uploadthing_token
 ```
 
-Example:
+Typical public-file setup:
 
 ```env
 UPLOADTHING_TOKEN=your_uploadthing_token
@@ -55,6 +56,15 @@ UPLOADTHING_UPLOAD_CONCURRENCY=1
 UPLOADTHING_UPLOAD_RETRIES=2
 UPLOADTHING_USE_CUSTOM_ID=true
 UPLOADTHING_LOG_LEVEL=Info
+```
+
+Typical private-file setup:
+
+```env
+UPLOADTHING_TOKEN=your_uploadthing_token
+UPLOADTHING_ACL=private
+UPLOADTHING_PRIVATE_FILES=true
+UPLOADTHING_SIGNED_URL_EXPIRES_IN=3600
 ```
 
 ## Strapi Configuration
@@ -87,7 +97,7 @@ export default ({ env }) => ({
 });
 ```
 
-Update `./config/middlewares.ts` as well so Strapi's Content Security Policy allows UploadThing-hosted files to load in the admin and media library:
+Update `./config/middlewares.ts` as well. This step is required so Strapi's Content Security Policy allows UploadThing-hosted images and media to load in the admin panel and Media Library:
 
 ```ts
 import type { Core } from '@strapi/strapi';
@@ -121,33 +131,83 @@ const config: Core.Config.Middlewares = [
 export default config;
 ```
 
-If you already have a `strapi::security` middleware entry, merge these UploadThing domains into your existing CSP directives instead of duplicating the middleware.
+If you already have a `strapi::security` middleware entry, merge these UploadThing domains into your existing CSP directives instead of adding a second `strapi::security` entry.
+
+## Public vs Private Files
+
+This is the part most people get confused by:
+
+- `acl` controls how the file is stored in UploadThing.
+- `privateFiles` controls how Strapi serves the file.
+
+Use this combination for public files:
+
+```env
+UPLOADTHING_ACL=public-read
+UPLOADTHING_PRIVATE_FILES=false
+```
+
+Use this combination for private files:
+
+```env
+UPLOADTHING_ACL=private
+UPLOADTHING_PRIVATE_FILES=true
+```
+
+If you set only `privateFiles=true`, Strapi will generate signed URLs, but the uploaded file may still be stored with a public ACL depending on your UploadThing configuration.
+
+## How Private Files Work
+
+When `privateFiles` is enabled:
+
+1. The provider tells Strapi that files should be treated as private.
+2. Strapi asks the provider for a signed URL whenever it needs to serve the file.
+3. The provider requests a temporary signed URL from UploadThing using the stored `customId` or `fileKey`.
+4. Strapi returns that temporary URL to the client.
+
+The signed URL lifetime is controlled by `signedUrlExpiresIn`.
 
 ## Provider Options
 
 | Option | Type | Default | Description |
 | --- | --- | --- | --- |
 | `token` | `string` | `process.env.UPLOADTHING_TOKEN` | UploadThing token used to initialize `UTApi`. |
-| `acl` | `string` | `undefined` | ACL passed to UploadThing during upload. |
-| `privateFiles` | `boolean` | `false` | Marks files as private and enables signed URL resolution. |
-| `contentDisposition` | `string` | `'inline'` | Content disposition used during upload. |
-| `signedUrlExpiresIn` | `number` | `3600` | Signed URL expiration time in seconds. |
-| `uploadConcurrency` | `number` | `1` | Maximum concurrent uploads handled by the provider. Values above `25` are capped. |
+| `acl` | `'public-read' \| 'private'` | `undefined` | ACL passed to UploadThing during upload. Use `'public-read'` for public files or `'private'` for storage-level private files. |
+| `privateFiles` | `boolean` | `false` | Tells Strapi to treat files as private and request signed URLs when serving them. |
+| `contentDisposition` | `'inline' \| 'attachment'` | `'inline'` | Content disposition sent to UploadThing during upload. |
+| `signedUrlExpiresIn` | `number` | `3600` | Signed URL lifetime in seconds. Used when Strapi requests a private file URL. |
+| `uploadConcurrency` | `number` | `1` | Maximum number of concurrent uploads handled by the provider. Values above `25` are capped to `25`. |
 | `uploadRetries` | `number` | `2` | Number of retry attempts for transient UploadThing upload failures. |
-| `useCustomId` | `boolean` | `true` | Uses a deterministic UploadThing `customId` based on Strapi file hash and extension. |
+| `useCustomId` | `boolean` | `true` | Uses a deterministic UploadThing `customId` based on the Strapi file hash and extension. |
 | `apiUrl` | `string` | `undefined` | Optional custom UploadThing API URL. |
 | `ingestUrl` | `string` | `undefined` | Optional custom UploadThing ingest URL. |
 | `logLevel` | `string` | `undefined` | Optional UploadThing log level. |
 | `logFormat` | `string` | `undefined` | Optional UploadThing log format. |
 | `isDev` | `boolean` | `undefined` | Optional UploadThing development mode flag. |
 
-## Private Files
+## Stored Metadata
 
-If `privateFiles` is enabled, the provider reports files as private and asks UploadThing for a signed URL when Strapi serves them.
+After upload, this provider stores UploadThing-specific metadata in:
 
-Example:
-
-```env
-UPLOADTHING_PRIVATE_FILES=true
-UPLOADTHING_SIGNED_URL_EXPIRES_IN=3600
+```txt
+provider_metadata.uploadthing
 ```
+
+That metadata includes values such as:
+
+- `fileKey`
+- `customId`
+- `url`
+- `ufsUrl`
+- `name`
+- `size`
+
+## Notes
+
+- The provider uses UploadThing `ufsUrl` as the file URL stored in Strapi.
+- If `useCustomId` is enabled, the provider prefers `customId` when generating signed URLs or deleting files.
+- If a deterministic `customId` conflicts during replace-media flows, the provider falls back to a unique ID and retries the upload.
+
+## Learn More
+
+- [UploadThing](https://uploadthing.com/)
