@@ -4,11 +4,11 @@
   "description": "UploadThing provider for the Strapi Upload plugin",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/vivinkv28/strapi-provider-uploadthing.git"
+    "url": "git+https://github.com/vivinkv6/strapi-upload-things.git"
   },
-  "homepage": "https://github.com/vivinkv28/strapi-provider-uploadthing#readme",
+  "homepage": "https://github.com/vivinkv6/strapi-upload-things#readme",
   "bugs": {
-    "url": "https://github.com/vivinkv28/strapi-provider-uploadthing/issues"
+    "url": "https://github.com/vivinkv6/strapi-upload-things/issues"
   },
   "main": "index.js",
   "exports": {
