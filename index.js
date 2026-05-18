@@ -1,7 +1,7 @@
 'use strict';
 
-const providerModule = require('./server/src/services/provider');
-const provider = providerModule.default || providerModule;
+const server = require('./dist/server');
+const provider = server.default?.services?.provider || server.services?.provider;
 
 module.exports = {
   init: provider,

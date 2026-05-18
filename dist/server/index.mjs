@@ -218,12 +218,12 @@ const provider = (providerOptions = {}) => {
       if (!key) {
         return file;
       }
-      const signed = await utapi.getSignedURL(key, {
+      const signed = await utapi.generateSignedURL(key, {
         expiresIn: resolvedSignedUrlTtl,
         keyType
       });
       return {
-        url: signed.ufsUrl || signed.url
+        url: signed.ufsUrl
       };
     },
     async uploadStream(file) {
