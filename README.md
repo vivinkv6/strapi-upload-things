@@ -87,6 +87,42 @@ export default ({ env }) => ({
 });
 ```
 
+Update `./config/middlewares.ts` as well so Strapi's Content Security Policy allows UploadThing-hosted files to load in the admin and media library:
+
+```ts
+import type { Core } from '@strapi/strapi';
+
+const config: Core.Config.Middlewares = [
+  'strapi::logger',
+  'strapi::errors',
+  {
+    name: 'strapi::security',
+    config: {
+      contentSecurityPolicy: {
+        useDefaults: true,
+        directives: {
+          'connect-src': ["'self'", 'https:'],
+          'img-src': ["'self'", 'data:', 'blob:', 'https://*.ufs.sh', 'https://utfs.io'],
+          'media-src': ["'self'", 'data:', 'blob:', 'https://*.ufs.sh', 'https://utfs.io'],
+          upgradeInsecureRequests: null,
+        },
+      },
+    },
+  },
+  'strapi::cors',
+  'strapi::poweredBy',
+  'strapi::query',
+  'strapi::body',
+  'strapi::session',
+  'strapi::favicon',
+  'strapi::public',
+];
+
+export default config;
+```
+
+If you already have a `strapi::security` middleware entry, merge these UploadThing domains into your existing CSP directives instead of duplicating the middleware.
+
 ## Provider Options
 
 | Option | Type | Default | Description |
